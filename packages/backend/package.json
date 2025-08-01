@@ -1,0 +1,41 @@
+{
+  "name": "@quartermaster/backend",
+  "version": "1.0.0",
+  "description": "Backend API for Quartermaster inventory app",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:reset": "rm -f database.sqlite && npm run db:migrate && npm run db:seed",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@quartermaster/shared": "workspace:*",
+    "hono": "^4.5.1",
+    "drizzle-orm": "^0.31.2",
+    "better-sqlite3": "^11.1.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "qrcode": "^1.5.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/qrcode": "^1.5.5",
+    "@types/better-sqlite3": "^7.6.10",
+    "typescript": "^5.5.3",
+    "tsx": "^4.16.2",
+    "drizzle-kit": "^0.22.8",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0"
+  }
+}

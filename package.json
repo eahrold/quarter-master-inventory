@@ -1,0 +1,35 @@
+{
+  "name": "quartermaster-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Scout troop inventory management system with QR code tracking",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:frontend": "turbo run dev --filter=frontend",
+    "dev:backend": "turbo run dev --filter=backend",
+    "build": "turbo run build",
+    "build:frontend": "turbo run build --filter=frontend",
+    "build:backend": "turbo run build --filter=backend",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "db:generate": "turbo run db:generate --filter=backend",
+    "db:migrate": "turbo run db:migrate --filter=backend",
+    "db:seed": "turbo run db:seed --filter=backend",
+    "db:reset": "turbo run db:reset --filter=backend"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.4",
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.3"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
