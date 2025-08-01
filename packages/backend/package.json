@@ -9,14 +9,14 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "db:generate": "drizzle-kit generate:sqlite",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "db:reset": "rm -f database.sqlite && npm run db:migrate && npm run db:seed",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@quartermaster/shared": "workspace:*",
+    "@quartermaster/shared": "*",
     "hono": "^4.5.1",
     "drizzle-orm": "^0.31.2",
     "better-sqlite3": "^11.1.2",
