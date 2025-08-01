@@ -5,6 +5,9 @@
 ### ✅ Completed Tasks
 
 - [x] **Setup Project Structure** - Set up project structure with monorepo (frontend, backend, shared packages)
+- [x] **Setup Database** - Configure Drizzle ORM with SQLite and create database schema (troops, users, items, transactions)
+- [x] **Setup Backend Core** - Set up Hono server with TypeScript, middleware, and basic routing structure
+- [x] **Setup Frontend Core** - Set up React app with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
 
 ### 🔄 In Progress
 
@@ -12,10 +15,7 @@ _None currently_
 
 ### ⏳ Pending Tasks
 
-- [ ] **Setup Database** - Configure Drizzle ORM with SQLite and create database schema (troops, users, items, transactions)
-- [ ] **Setup Backend Core** - Set up Hono server with TypeScript, middleware, and basic routing structure
 - [ ] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
-- [ ] **Setup Frontend Core** - Set up React app with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
 
 ## Medium Priority (Core Features)
 

@@ -23,11 +23,29 @@ type Variables = {
 /**
  * Middleware to authenticate requests using JWT tokens
  * Expects Authorization header: "Bearer <token>"
+ * BYPASS: In development, uses mock user for localhost
  */
 export async function authenticate(
   c: Context<{ Variables: Variables }>,
   next: Next
 ) {
+  // DEVELOPMENT BYPASS: Skip auth for localhost
+  if (process.env.NODE_ENV === "development") {
+    // Use mock admin user for development
+    const mockUser = {
+      id: "dev-user-id",
+      role: "admin",
+      troopId: "dev-troop-id", 
+      username: "admin",
+      email: "admin@localhost.dev",
+    };
+    
+    console.log("🔓 Development mode: Bypassing authentication, using mock admin user");
+    c.set("user", mockUser);
+    await next();
+    return;
+  }
+
   const authHeader = c.req.header("authorization");
   const token = authHeader?.replace("Bearer ", "");
 

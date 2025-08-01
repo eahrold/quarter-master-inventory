@@ -19,7 +19,7 @@ The Quarter Master Inventory App is designed as a multi-tenant SaaS application 
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React Client  │◄──►│  Hono API    │◄──►│   SQLite DB     │
+│   React Client  │◄──►│  Hono API       │◄──►│   SQLite DB     │
 │   (shadcn/ui)   │    │  (Multi-tenant) │    │   (Drizzle)     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
         │                        │

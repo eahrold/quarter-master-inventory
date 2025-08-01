@@ -32,15 +32,12 @@ app.use("*", prettyJSON());
 app.use(
   "*",
   cors({
-    origin: (origin) => {
-      // Allow requests from frontend dev server and production domains
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        ...(process.env.CORS_ORIGINS?.split(",") || []),
-      ];
-      return allowedOrigins.includes(origin) || !origin;
-    },
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:3000",
+      ...(process.env.CORS_ORIGINS?.split(",") || []),
+    ],
     credentials: true,
   })
 );
