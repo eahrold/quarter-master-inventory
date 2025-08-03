@@ -1,4 +1,14 @@
-import type { LoginInput, RegisterInput, User } from '@quartermaster/shared'
+import type { 
+  LoginInput, 
+  RegisterInput, 
+  User, 
+  Item, 
+  CreateItemData, 
+  UpdateItemData, 
+  CheckoutData, 
+  CheckinData, 
+  ItemFilters 
+} from '@quartermaster/shared'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -16,6 +26,7 @@ class ApiError extends Error {
 class APIClient {
   private baseURL: string
   private token: string | null = null
+  private troopSlug: string | null = null
 
   constructor(baseURL: string) {
     this.baseURL = baseURL
@@ -23,6 +34,10 @@ class APIClient {
 
   setAuthToken(token: string | null) {
     this.token = token
+  }
+
+  setTroopSlug(troopSlug: string | null) {
+    this.troopSlug = troopSlug
   }
 
   private async request<T>(
@@ -35,6 +50,7 @@ class APIClient {
       headers: {
         'Content-Type': 'application/json',
         ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...(this.troopSlug && { 'x-troop-slug': this.troopSlug }),
         ...options.headers,
       },
       ...options,
@@ -145,9 +161,63 @@ class APIClient {
       })
     },
   }
+
+  // Inventory management endpoints
+  items = {
+    list: async (filters?: ItemFilters): Promise<{ items: Item[] }> => {
+      const params = new URLSearchParams()
+      if (filters?.category) params.append('category', filters.category)
+      if (filters?.status) params.append('status', filters.status)
+      if (filters?.location) params.append('location', filters.location)
+      if (filters?.search) params.append('search', filters.search)
+      
+      const queryString = params.toString()
+      const url = queryString ? `/api/items?${queryString}` : '/api/items'
+      
+      return await this.request<{ items: Item[] }>(url)
+    },
+
+    get: async (id: string): Promise<{ item: Item }> => {
+      return await this.request<{ item: Item }>(`/api/items/${id}`)
+    },
+
+    create: async (itemData: CreateItemData): Promise<{ item: Item }> => {
+      return await this.request<{ item: Item }>('/api/items', {
+        method: 'POST',
+        body: JSON.stringify(itemData),
+      })
+    },
+
+    update: async (id: string, itemData: UpdateItemData): Promise<{ item: Item }> => {
+      return await this.request<{ item: Item }>(`/api/items/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(itemData),
+      })
+    },
+
+    delete: async (id: string): Promise<{ message: string }> => {
+      return await this.request<{ message: string }>(`/api/items/${id}`, {
+        method: 'DELETE',
+      })
+    },
+
+    checkout: async (id: string, checkoutData: CheckoutData): Promise<{ item: Item }> => {
+      return await this.request<{ item: Item }>(`/api/items/${id}/checkout`, {
+        method: 'POST',
+        body: JSON.stringify(checkoutData),
+      })
+    },
+
+    checkin: async (id: string, checkinData: CheckinData): Promise<{ item: Item }> => {
+      return await this.request<{ item: Item }>(`/api/items/${id}/checkin`, {
+        method: 'POST',
+        body: JSON.stringify(checkinData),
+      })
+    },
+  }
 }
 
 // Create and export API client instance
 export const api = new APIClient(API_BASE_URL)
 export { ApiError }
-export type { User }
+export type { User, Item }

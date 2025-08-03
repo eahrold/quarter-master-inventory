@@ -47,6 +47,12 @@ export const useAuthStore = create<AuthState>()(
           
           // Verify token and get user info
           const { user, troop } = await api.auth.me()
+          
+          // Set troop slug for subsequent requests
+          if (troop) {
+            api.setTroopSlug(troop.slug)
+          }
+          
           set({ user, troop })
         } catch (error) {
           console.error('Auth check failed:', error)
@@ -62,6 +68,10 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true, error: null })
           
           const { user, token, troop } = await api.auth.login({ email, password })
+          
+          // Set auth tokens for future requests
+          api.setAuthToken(token)
+          api.setTroopSlug(troop.slug)
           
           set({ user, token, troop, isLoading: false })
           
@@ -87,6 +97,10 @@ export const useAuthStore = create<AuthState>()(
             troopSlug 
           })
           
+          // Set auth tokens for future requests
+          api.setAuthToken(token)
+          api.setTroopSlug(troop.slug)
+          
           set({ user, token, troop, isLoading: false })
           
           console.log('Registration successful:', { user: user.username, troop: troop.name })
@@ -111,9 +125,12 @@ export const useAuthStore = create<AuthState>()(
           // Even if logout fails, clear local state
           console.error('Logout API call failed:', error)
         } finally {
-          // Clear local state and API token
-          set({ user: null, token: null, troop: null, isLoading: false, error: null })
+          // Clear API tokens
           api.setAuthToken(null)
+          api.setTroopSlug(null)
+          
+          // Clear local state
+          set({ user: null, token: null, troop: null, isLoading: false, error: null })
         }
       },
     }),
@@ -124,6 +141,15 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         troop: state.troop,
       }),
+      onRehydrateStorage: () => (state) => {
+        // Restore API client tokens when store is rehydrated from localStorage
+        if (state?.token) {
+          api.setAuthToken(state.token)
+        }
+        if (state?.troop?.slug) {
+          api.setTroopSlug(state.troop.slug)
+        }
+      },
     }
   )
 )
