@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Documentation
+
+Before starting any development work, review these key project documents for complete context:
+
+- **`SPECIFICATION.md`** - Technical requirements and detailed feature specifications for the Quarter Master Inventory App. Contains user stories, API endpoints, database schema, acceptance criteria, and Phase 1 POC requirements.
+- **`DESIGN.md`** - Comprehensive technical design document with architecture overview, technology stack decisions, database design patterns, frontend/backend structure, security considerations, and implementation details.
+- **`TASKS.md`** - Current development task list with priority levels and completion status. Track progress here and update task status as work is completed.
+
+These documents contain the complete project vision and should guide all implementation decisions.
+
 ## Development Commands
 
 ### Quick Start
