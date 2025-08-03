@@ -17,7 +17,7 @@ import { UsersPage } from '@/pages/UsersPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 
 function App() {
-  const { checkAuth, user } = useAuthStore()
+  const { checkAuth } = useAuthStore()
 
   // Check authentication status on app load
   useEffect(() => {

@@ -60,8 +60,6 @@ export async function authenticate(
       process.env.JWT_SECRET || "fallback-secret"
     ) as JWTPayload;
 
-    const troop = c.get("troop");
-
     // Verify user still exists and belongs to the correct troop
     const [user] = await db
       .select({
@@ -75,7 +73,7 @@ export async function authenticate(
       .where(
         and(
           eq(users.id, payload.userId),
-          eq(users.troopId, troop?.id || payload.troopId)
+          eq(users.troopId, payload.troopId)
         )
       )
       .limit(1);

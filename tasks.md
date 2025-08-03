@@ -8,15 +8,14 @@
 - [x] **Setup Database** - Configure Drizzle ORM with SQLite and create database schema (troops, users, items, transactions)
 - [x] **Setup Backend Core** - Set up Hono server with TypeScript, middleware, and basic routing structure
 - [x] **Setup Frontend Core** - Set up React app with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
+- [x] **Fix Navigation Layout** - Fix broken sidebar navigation layout with overlapping user profile section
+- [x] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
 
 ### 🔄 In Progress
 
 _None currently_
 
 ### ⏳ Pending Tasks
-
-- [x] **Fix Navigation Layout** - Fix broken sidebar navigation layout with overlapping user profile section
-- [ ] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
 
 ## Medium Priority (Core Features)
 

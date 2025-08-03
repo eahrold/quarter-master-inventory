@@ -12,7 +12,11 @@
       "Bash(npx turbo run:*)",
       "Bash(curl:*)",
       "Bash(npx tsx:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(timeout 10s npm run dev:backend)",
+      "Bash(true)",
+      "Bash(node:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   }
