@@ -1,5 +1,10 @@
 # Quarter Master Inventory App - Task List
 
+## Development Strategy: Frontend-Backend Parity
+
+**All features must be developed in pairs - backend API + frontend UI together.**
+Each feature is complete only when both backend and frontend implementations are done, tested, and integrated.
+
 ## High Priority (Core Foundation)
 
 ### ✅ Completed Tasks
@@ -9,7 +14,7 @@
 - [x] **Setup Backend Core** - Set up Hono server with TypeScript, middleware, and basic routing structure
 - [x] **Setup Frontend Core** - Set up React app with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
 - [x] **Fix Navigation Layout** - Fix broken sidebar navigation layout with overlapping user profile section
-- [x] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
+- [x] **Implement Backend Auth System** - JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
 - [x] **Setup Comprehensive Testing** - Set up comprehensive testing framework with Vitest, created auth middleware tests (100% coverage), multi-tenant database tests, and JWT validation tests
 
 ### 🔄 In Progress
@@ -18,20 +23,37 @@ _None currently_
 
 ### ⏳ Pending Tasks
 
-## Medium Priority (Core Features)
+## Medium Priority (Feature Pairs - Backend + Frontend)
 
-### ⏳ Pending Tasks
+### Authentication & User Management Feature Pair
 
-- [x] **Implement User Management** - Create user registration, login, and user management endpoints
-- [ ] **Implement Inventory CRUD** - Create API endpoints for inventory items (CRUD operations with location tracking)
-- [ ] **Implement QR System** - Implement QR code generation and scanning functionality
-- [ ] **Implement Checkout System** - Create check-in/check-out workflow with transaction logging
-- [ ] **Implement Search & Filter** - Add search and filtering functionality for inventory items
-- [ ] **Create Dashboard** - Build dashboard with inventory overview and status summaries
-- [ ] **Implement Multi-Tenant** - Add multi-tenant support with troop isolation
-- [ ] **Create Mobile Scanner** - Implement mobile-responsive QR scanner with camera access
-- [ ] **Implement Validation** - Add comprehensive input validation with Zod schemas
-- [ ] **Add Error Handling** - Implement proper error handling and user feedback
+- [x] **Backend: User Management API** - Create user registration, login, and user management endpoints ✅
+- [ ] **Frontend: Auth UI** - Create login/register forms, auth context, protected routes, and user management interface
+
+### Inventory Management Feature Pair
+
+- [ ] **Backend: Inventory CRUD API** - Create API endpoints for inventory items (CRUD operations with location tracking)
+- [ ] **Frontend: Inventory Management UI** - Create inventory list, add/edit forms, location selector, and status management
+
+### QR Code System Feature Pair
+
+- [ ] **Backend: QR Code API** - Implement QR code generation and scanning endpoints
+- [ ] **Frontend: QR Scanner UI** - Implement mobile-responsive QR scanner with camera access and code display
+
+### Transaction System Feature Pair
+
+- [ ] **Backend: Checkout API** - Create check-in/check-out workflow with transaction logging
+- [ ] **Frontend: Checkout UI** - Create checkout forms, transaction history, and return workflow
+
+### Search & Dashboard Feature Pair
+
+- [ ] **Backend: Search & Filter API** - Add search and filtering functionality for inventory items
+- [ ] **Frontend: Dashboard UI** - Build dashboard with inventory overview, search, and status summaries
+
+### Multi-Tenant Feature Pair
+
+- [ ] **Backend: Multi-Tenant API** - Add enhanced multi-tenant support with troop isolation
+- [ ] **Frontend: Troop Management UI** - Create troop selection, switching, and management interface
 
 ## Low Priority (Polish & Infrastructure)
 
@@ -76,7 +98,16 @@ _None currently_
 - **Database Operations**: 85% statement coverage
 - **Overall Project**: 85% minimum statement coverage
 
-### Workflow
+### Feature Pair Development Workflow
+
+1. **Plan Feature Pair**: Define both backend API and frontend UI requirements
+2. **Backend First**: Implement and test the backend API endpoints
+3. **Frontend Second**: Implement the frontend UI that consumes the API
+4. **Integration**: Ensure frontend and backend work together seamlessly
+5. **End-to-End Testing**: Test the complete user workflow
+6. **Mark Complete**: Only when both backend and frontend are done and integrated
+
+### Individual Task Workflow
 
 1. Mark task as "In Progress" when starting work
 2. **Write tests first** (Test-Driven Development encouraged)
@@ -86,7 +117,7 @@ _None currently_
 6. **Run full test suite** to ensure no regressions
 7. Mark task as "Completed"
 8. Create git commit with summary of changes
-9. Move to next task
+9. Move to next task in the feature pair
 
 ### Git Commit Format
 

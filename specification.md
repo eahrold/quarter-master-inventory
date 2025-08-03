@@ -3,6 +3,26 @@
 ## Overview
 A web-based inventory management system for scout troops to track equipment stored in trailers, with QR code-based check-in/out functionality and location-based organization.
 
+## Development Strategy: Frontend-Backend Parity
+
+**All features must be implemented as complete pairs - backend API + frontend UI together.**
+
+### Feature Development Requirements
+
+1. **Backend API Complete**: All endpoints implemented, tested, and documented
+2. **Frontend UI Complete**: All user interfaces implemented with proper error handling
+3. **Integration Tested**: Frontend successfully consumes backend APIs
+4. **User Workflow Tested**: Complete user journeys work end-to-end
+5. **Documentation Updated**: Both API docs and UI component docs are current
+
+### Feature Pair Status Tracking
+
+- ✅ **Authentication & User Management**: Backend complete, Frontend in progress
+- ⏳ **Inventory Management**: Backend + Frontend both needed
+- ⏳ **QR Code System**: Backend + Frontend both needed  
+- ⏳ **Transaction System**: Backend + Frontend both needed
+- ⏳ **Search & Dashboard**: Backend + Frontend both needed
+
 ## Phase 1 - POC Requirements
 
 ### 1. User Management & RBAC
@@ -176,14 +196,53 @@ A web-based inventory management system for scout troops to track equipment stor
 - `DELETE /api/users/:id` - Delete user
 
 ### Frontend Components
-- Authentication components (Login/Register)
-- Dashboard with inventory overview
-- Item listing with search/filters
-- Item detail/edit forms
-- QR code scanner component
-- Check-in/out workflow components
-- User management interface
-- Mobile-responsive navigation
+
+#### Authentication Components
+- **LoginForm**: Email/password login with validation and error handling
+- **RegisterForm**: User registration with troop selection and role assignment
+- **AuthContext**: React context for authentication state management
+- **ProtectedRoute**: Route wrapper for role-based access control
+- **AuthLayout**: Shared layout for login/register pages
+
+#### Dashboard Components
+- **DashboardOverview**: Main dashboard with inventory summary cards
+- **InventoryStats**: Visual statistics (total items, checked out, needs repair)
+- **RecentActivity**: Recent transactions and check-in/out activity
+- **QuickActions**: Fast access to common operations (scan QR, search)
+
+#### Inventory Management Components
+- **ItemList**: Paginated list of inventory items with search/filters
+- **ItemCard**: Individual item display with status, location, and actions
+- **ItemDetail**: Detailed view of item with transaction history
+- **ItemForm**: Create/edit form with validation (name, category, location)
+- **LocationSelector**: Dropdown/picker for trailer location (Left/Right-Low/Middle/High)
+- **ItemSearch**: Search input with real-time filtering and autocomplete
+
+#### QR Code & Scanning Components
+- **QRScanner**: Camera-based QR code scanner with permission handling
+- **QRDisplay**: Display generated QR codes for items
+- **ScanResult**: Show scanned item details and available actions
+- **CameraPermission**: Handle camera permission requests and errors
+
+#### Transaction & Checkout Components
+- **CheckoutFlow**: Multi-step checkout process (scan → confirm → complete)
+- **CheckinFlow**: Check-in process with condition reporting
+- **TransactionHistory**: List of transactions with filtering and pagination
+- **TransactionDetail**: Detailed transaction view with timestamps and user info
+
+#### User Management Components (Admin Only)
+- **UserList**: List of all users in troop with role indicators
+- **UserForm**: Create/edit user form with role assignment
+- **UserDetail**: User profile with permissions and activity history
+- **RoleSelector**: Dropdown for selecting user roles
+
+#### Shared UI Components
+- **Header**: Navigation header with user menu and troop info
+- **Sidebar**: Main navigation sidebar with role-based menu items
+- **LoadingSpinner**: Consistent loading indicators
+- **ErrorBoundary**: Error handling and display
+- **Modal**: Reusable modal component for forms and confirmations
+- **Toast**: Notification system for success/error messages
 
 ## User Stories
 
