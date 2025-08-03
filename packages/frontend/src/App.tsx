@@ -1,20 +1,20 @@
 import { Routes, Route } from 'react-router-dom'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from './store/auth'
 import { useEffect } from 'react'
 
 // Layout components
-import { AppLayout } from '@/components/layout/AppLayout'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { AppLayout } from './components/layout/AppLayout'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
 // Page components
-import { LoginPage } from '@/pages/LoginPage'
-import { RegisterPage } from '@/pages/RegisterPage'
-import { DashboardPage } from '@/pages/DashboardPage'
-import { InventoryPage } from '@/pages/InventoryPage'
-import { ItemDetailPage } from '@/pages/ItemDetailPage'
-import { ScannerPage } from '@/pages/ScannerPage'
-import { UsersPage } from '@/pages/UsersPage'
-import { ProfilePage } from '@/pages/ProfilePage'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { InventoryPage } from './pages/InventoryPage'
+import { ItemDetailPage } from './pages/ItemDetailPage'
+import { ScannerPage } from './pages/ScannerPage'
+import { UsersPage } from './pages/UsersPage'
+import { ProfilePage } from './pages/ProfilePage'
 
 function App() {
   const { checkAuth } = useAuthStore()
