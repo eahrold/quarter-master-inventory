@@ -262,6 +262,79 @@ A web-based inventory management system for scout troops to track equipment stor
 - Rate limiting on API endpoints
 - Audit logging for sensitive operations
 
+## Testing Requirements
+
+### Unit Testing Standards
+All features must include comprehensive unit tests with minimum coverage thresholds:
+- **Authentication & Authorization**: 100% coverage required
+- **Business Logic**: 90% coverage required
+- **API Endpoints**: 85% coverage required
+- **Database Operations**: 85% coverage required
+- **Utility Functions**: 90% coverage required
+
+### Test Categories Required
+
+#### Authentication Tests
+- JWT token generation and validation
+- Password hashing and verification
+- Role-based access control
+- Session management
+- Login/logout functionality
+- User registration validation
+
+#### Database Tests
+- Multi-tenant data isolation
+- Foreign key constraints
+- Cascade deletion behavior
+- Data validation and constraints
+- Transaction rollback scenarios
+- Database connection handling
+
+#### API Endpoint Tests
+- Request validation
+- Response formatting
+- Error handling
+- Authentication middleware
+- Authorization checks
+- Rate limiting behavior
+
+#### Integration Tests
+- End-to-end user workflows
+- QR code generation and scanning
+- Check-in/out processes
+- Search functionality
+- File upload/download operations
+
+#### Security Tests
+- Input sanitization
+- SQL injection prevention
+- XSS attack prevention
+- Authentication bypass attempts
+- Authorization escalation attempts
+- Rate limiting effectiveness
+
+### Testing Tools & Framework
+- **Backend**: Vitest with better-sqlite3 for in-memory testing
+- **Frontend**: Vitest + Testing Library for component tests
+- **E2E**: Playwright for full application testing
+- **Coverage**: Minimum 85% overall statement coverage
+- **CI/CD**: All tests must pass before deployment
+
+### Test Data Management
+- Use in-memory databases for unit tests
+- Implement proper test data cleanup
+- Create reusable test fixtures
+- Maintain test data isolation between tests
+- Use factory patterns for test data generation
+
+### Testing Best Practices
+- Write tests before implementation (TDD encouraged)
+- Test both happy path and error scenarios
+- Include edge cases and boundary conditions
+- Mock external dependencies appropriately
+- Maintain fast test execution times
+- Document complex test scenarios
+
 ## Performance Requirements
 - Page load times under 3 seconds
 - Search results under 2 seconds

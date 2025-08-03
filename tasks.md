@@ -10,6 +10,7 @@
 - [x] **Setup Frontend Core** - Set up React app with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
 - [x] **Fix Navigation Layout** - Fix broken sidebar navigation layout with overlapping user profile section
 - [x] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
+- [x] **Setup Comprehensive Testing** - Set up comprehensive testing framework with Vitest, created auth middleware tests (100% coverage), multi-tenant database tests, and JWT validation tests
 
 ### 🔄 In Progress
 
@@ -38,7 +39,10 @@ _None currently_
 
 - [ ] **Implement UI Theme** - Apply yellow/orange theme throughout the application
 - [ ] **Add Transaction History** - Create transaction history views and reporting
-- [ ] **Setup Testing** - Set up unit tests (Vitest) and E2E tests (Playwright)
+- [ ] **Add Frontend Tests** - Create comprehensive frontend component tests with Testing Library and MSW
+- [ ] **Add E2E Tests** - Set up Playwright for end-to-end testing of user workflows
+- [ ] **Add API Integration Tests** - Create full API integration tests for all endpoints
+- [ ] **Setup CI/CD Testing** - Configure GitHub Actions to run all tests on every PR and merge
 - [ ] **Setup Deployment** - Configure Docker and deployment scripts
 - [ ] **Create Seed Data** - Create database seeding script with sample data
 
@@ -48,14 +52,41 @@ _None currently_
 - 🔄 **In Progress**: Currently working on this task
 - ⏳ **Pending**: Not yet started
 
+### Testing Requirements for All Tasks
+
+**Every feature implementation must include comprehensive tests:**
+
+#### Backend Features Must Include:
+- **Unit Tests**: Test individual functions and middleware (minimum 85% coverage)
+- **Integration Tests**: Test API endpoints with authentication and authorization
+- **Database Tests**: Test multi-tenant data isolation and constraints
+- **Security Tests**: Test for vulnerabilities and access control
+- **Error Handling Tests**: Test error scenarios and edge cases
+
+#### Frontend Features Must Include:
+- **Component Tests**: Test component rendering and interactions
+- **Hook Tests**: Test custom hooks with various scenarios
+- **Integration Tests**: Test component integration with API calls
+- **User Interaction Tests**: Test user workflows and form submissions
+
+#### Coverage Requirements:
+- **Authentication & Authorization**: 100% statement coverage
+- **Business Logic**: 90% statement coverage
+- **API Endpoints**: 85% statement coverage
+- **Database Operations**: 85% statement coverage
+- **Overall Project**: 85% minimum statement coverage
+
 ### Workflow
 
 1. Mark task as "In Progress" when starting work
-2. Complete the implementation
-3. Test the functionality
-4. Mark task as "Completed"
-5. Create git commit with summary of changes
-6. Move to next task
+2. **Write tests first** (Test-Driven Development encouraged)
+3. Complete the implementation
+4. **Ensure all tests pass** with required coverage
+5. Test the functionality manually
+6. **Run full test suite** to ensure no regressions
+7. Mark task as "Completed"
+8. Create git commit with summary of changes
+9. Move to next task
 
 ### Git Commit Format
 
