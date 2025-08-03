@@ -19,12 +19,11 @@ export interface TestTroop {
   slug: string;
 }
 
-export const createTestTroop = async (overrides: Partial<TestTroop> = {}): Promise<TestTroop> => {
+export const createTestTroop = async (slug: string = 'test-troop-101'): Promise<TestTroop> => {
   const testTroop = {
-    id: 'test-troop-1',
-    name: 'Test Troop 101',
-    slug: 'test-troop-101',
-    ...overrides,
+    id: crypto.randomUUID(),
+    name: `Test Troop ${slug}`,
+    slug,
   };
 
   await testDb.insert(troops).values(testTroop);
@@ -32,31 +31,33 @@ export const createTestTroop = async (overrides: Partial<TestTroop> = {}): Promi
 };
 
 export const createTestUser = async (
-  troopId: string,
-  overrides: Partial<TestUser> = {}
+  userData: { troopId: string; username: string; email: string; role: "admin" | "leader" | "scout" | "viewer" }
 ): Promise<TestUser> => {
-  const passwordHash = await bcrypt.hash('testpassword123', 12);
+  const passwordHash = await bcrypt.hash('password123', 12);
   
   const testUser = {
-    id: 'test-user-1',
-    username: 'testuser',
-    email: 'test@example.com',
-    role: 'scout',
-    troopId,
+    id: crypto.randomUUID(),
+    username: userData.username,
+    email: userData.email,
+    role: userData.role,
+    troopId: userData.troopId,
     passwordHash,
-    ...overrides,
   };
 
   await testDb.insert(users).values(testUser);
   return testUser;
 };
 
-export const generateTestToken = (userId: string, troopId: string, role: string): string => {
+export const getAuthToken = (userId: string, troopId: string, role: string): string => {
   return jwt.sign(
     { userId, troopId, role },
     process.env.JWT_SECRET || 'test-secret',
     { expiresIn: '1h' }
   );
+};
+
+export const generateTestToken = (userId: string, troopId: string, role: string): string => {
+  return getAuthToken(userId, troopId, role);
 };
 
 export const generateExpiredToken = (userId: string, troopId: string, role: string): string => {
@@ -75,8 +76,8 @@ export const generateInvalidToken = (): string => {
   );
 };
 
-export const mockContext = () => {
-  const context = {
+export const mockContext = (): any => {
+  const context: any = {
     variables: new Map(),
     req: {
       header: vi.fn(),
@@ -95,3 +96,9 @@ export const mockContext = () => {
 };
 
 export const mockNext = vi.fn();
+
+export const cleanupTestData = async (): Promise<void> => {
+  // Clean up all test data - delete all users and troops
+  await testDb.delete(users);
+  await testDb.delete(troops);
+};

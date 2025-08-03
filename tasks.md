@@ -22,7 +22,7 @@ _None currently_
 
 ### ⏳ Pending Tasks
 
-- [ ] **Implement User Management** - Create user registration, login, and user management endpoints
+- [x] **Implement User Management** - Create user registration, login, and user management endpoints
 - [ ] **Implement Inventory CRUD** - Create API endpoints for inventory items (CRUD operations with location tracking)
 - [ ] **Implement QR System** - Implement QR code generation and scanning functionality
 - [ ] **Implement Checkout System** - Create check-in/check-out workflow with transaction logging
