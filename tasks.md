@@ -15,6 +15,7 @@ _None currently_
 
 ### ⏳ Pending Tasks
 
+- [x] **Fix Navigation Layout** - Fix broken sidebar navigation layout with overlapping user profile section
 - [ ] **Implement Auth System** - Implement JWT authentication with role-based access control (Admin/Leader/Scout/Viewer)
 
 ## Medium Priority (Core Features)

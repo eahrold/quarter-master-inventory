@@ -45,8 +45,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+        lg:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -65,7 +66,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           </Button>
         </div>
 
-        <nav className="mt-6 px-3">
+        {/* Navigation section */}
+        <nav className="flex-1 mt-6 px-3 overflow-y-auto">
           <div className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href
@@ -96,17 +98,17 @@ export function AppLayout({ children }: AppLayoutProps) {
         </nav>
 
         {/* User section */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-gray-200">
+        <div className="border-t border-gray-200 p-3 flex-shrink-0">
           <div className="flex items-center space-x-3 px-3 py-2">
             <div className="w-8 h-8 bg-quartermaster-yellow-500 rounded-full flex items-center justify-center">
               <User className="h-4 w-4 text-quartermaster-orange-900" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.username || 'User'}
+                {user?.username || 'admin'}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.role || 'Role'}
+                {user?.role || 'admin'}
               </p>
             </div>
             <Button
