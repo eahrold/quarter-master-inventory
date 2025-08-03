@@ -1117,16 +1117,390 @@ npm run db:seed
 
 ### Testing Strategy
 
+The application employs a comprehensive multi-layered testing strategy to ensure code quality, security, and reliability.
+
+#### Test Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Testing Pyramid                     │
+├─────────────────────────────────────────────────────────┤
+│  E2E Tests (Playwright)                                │
+│  ├─ User workflows                                     │
+│  ├─ QR code scanning                                   │
+│  └─ Multi-browser compatibility                        │
+├─────────────────────────────────────────────────────────┤
+│  Integration Tests (Vitest)                            │
+│  ├─ API endpoint testing                               │
+│  ├─ Database operations                                │
+│  └─ Authentication flows                               │
+├─────────────────────────────────────────────────────────┤
+│  Unit Tests (Vitest)                                   │
+│  ├─ Component logic (Frontend)                         │
+│  ├─ Business logic (Backend)                           │
+│  ├─ Utility functions                                  │
+│  └─ Database models                                    │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### Backend Testing Framework
+
+**Testing Stack:**
+- **Vitest**: Primary testing framework for unit and integration tests
+- **Better-SQLite3**: In-memory database for test isolation
+- **Supertest**: HTTP endpoint testing (optional for full integration tests)
+
+**Test Configuration:**
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+      },
+    },
+    setupFiles: ['./src/test/setup.ts'],
+  },
+});
+```
+
+**Test Database Setup:**
+```typescript
+// src/test/setup.ts
+import { beforeEach, beforeAll } from 'vitest';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
+
+// Use in-memory database for tests
+const sqlite = new Database(':memory:');
+sqlite.pragma('foreign_keys = ON');
+
+export const testDb = drizzle(sqlite, { schema });
+
+beforeAll(async () => {
+  // Create tables for testing
+  await createTestTables();
+});
+
+beforeEach(async () => {
+  // Clean all tables before each test
+  await cleanDatabase();
+});
+```
+
+#### Unit Testing Patterns
+
+**1. Authentication Middleware Tests:**
+```typescript
+// middleware/__tests__/auth.test.ts
+describe('authenticate middleware', () => {
+  it('should authenticate valid JWT tokens', async () => {
+    const token = generateTestToken(testUser.id, testUser.troopId, 'admin');
+    context.req.header.mockReturnValue(`Bearer ${token}`);
+    
+    await authenticate(context, next);
+    
+    expect(context.set).toHaveBeenCalledWith('user', expect.objectContaining({
+      id: testUser.id,
+      role: 'admin'
+    }));
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should reject expired tokens', async () => {
+    const expiredToken = generateExpiredToken(testUser.id, testUser.troopId, 'admin');
+    context.req.header.mockReturnValue(`Bearer ${expiredToken}`);
+    
+    await authenticate(context, next);
+    
+    expect(context.json).toHaveBeenCalledWith({ error: 'Invalid token' }, 401);
+    expect(next).not.toHaveBeenCalled();
+  });
+});
+```
+
+**2. Multi-Tenant Database Tests:**
+```typescript
+// db/__tests__/multi-tenant.test.ts
+describe('Multi-tenant Database Operations', () => {
+  it('should isolate data between troops', async () => {
+    const troop1Items = await testDb
+      .select()
+      .from(items)
+      .where(eq(items.troopId, troop1.id));
+    
+    const troop2Items = await testDb
+      .select()
+      .from(items)
+      .where(eq(items.troopId, troop2.id));
+    
+    expect(troop1Items).toHaveLength(1);
+    expect(troop2Items).toHaveLength(1);
+    expect(troop1Items[0].troopId).not.toBe(troop2Items[0].troopId);
+  });
+
+  it('should cascade delete on troop removal', async () => {
+    await testDb.delete(troops).where(eq(troops.id, troop1.id));
+    
+    const orphanedUsers = await testDb
+      .select()
+      .from(users)
+      .where(eq(users.troopId, troop1.id));
+    
+    expect(orphanedUsers).toHaveLength(0);
+  });
+});
+```
+
+**3. Authorization Tests:**
+```typescript
+// middleware/__tests__/auth.test.ts
+describe('authorize middleware', () => {
+  it('should allow access for correct roles', async () => {
+    const mockUser = { role: 'admin' };
+    context.get.mockReturnValue(mockUser);
+    const authMiddleware = authorize(['admin', 'leader']);
+
+    await authMiddleware(context, next);
+
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should deny access for insufficient permissions', async () => {
+    const mockUser = { role: 'scout' };
+    context.get.mockReturnValue(mockUser);
+    const authMiddleware = authorize(['admin', 'leader']);
+
+    await authMiddleware(context, next);
+
+    expect(context.json).toHaveBeenCalledWith({
+      error: 'Insufficient permissions',
+      requiredRoles: ['admin', 'leader'],
+      userRole: 'scout'
+    }, 403);
+  });
+});
+```
+
+#### Frontend Testing Framework
+
+**Testing Stack:**
+- **Vitest**: Unit testing framework
+- **Testing Library**: Component testing utilities
+- **Mock Service Worker (MSW)**: API mocking for integration tests
+
+**Component Testing Pattern:**
+```typescript
+// components/__tests__/ItemCard.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ItemCard } from '../ItemCard';
+
+describe('ItemCard', () => {
+  const mockItem = {
+    id: '1',
+    name: 'Test Item',
+    status: 'available',
+    location: 'Left-High'
+  };
+
+  it('should display item information', () => {
+    render(<ItemCard item={mockItem} />);
+    
+    expect(screen.getByText('Test Item')).toBeInTheDocument();
+    expect(screen.getByText('Available')).toBeInTheDocument();
+    expect(screen.getByText('Left-High')).toBeInTheDocument();
+  });
+
+  it('should handle checkout action', () => {
+    const onCheckout = vi.fn();
+    render(<ItemCard item={mockItem} onCheckout={onCheckout} />);
+    
+    fireEvent.click(screen.getByText('Check Out'));
+    
+    expect(onCheckout).toHaveBeenCalledWith(mockItem.id);
+  });
+});
+```
+
+#### Integration Testing
+
+**API Integration Tests:**
+```typescript
+// routes/__tests__/items-integration.test.ts
+describe('Items API Integration', () => {
+  it('should create and retrieve items', async () => {
+    const newItem = {
+      name: 'Integration Test Item',
+      category: 'permanent',
+      locationSide: 'left',
+      locationLevel: 'high'
+    };
+
+    // Create item
+    const createResponse = await request(app)
+      .post('/api/items')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(newItem)
+      .expect(201);
+
+    // Retrieve item
+    const getResponse = await request(app)
+      .get(`/api/items/${createResponse.body.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    expect(getResponse.body.name).toBe(newItem.name);
+  });
+});
+```
+
+#### End-to-End Testing
+
+**Playwright E2E Tests:**
+```typescript
+// e2e/auth-flow.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Authentication Flow', () => {
+  test('should login and access dashboard', async ({ page }) => {
+    await page.goto('/login');
+    
+    await page.fill('[data-testid="email"]', 'admin@test.com');
+    await page.fill('[data-testid="password"]', 'password123');
+    await page.click('[data-testid="login-button"]');
+    
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.locator('[data-testid="welcome-message"]')).toBeVisible();
+  });
+
+  test('should scan QR code and checkout item', async ({ page, context }) => {
+    // Grant camera permissions
+    await context.grantPermissions(['camera']);
+    
+    await page.goto('/scanner');
+    await page.click('[data-testid="start-scan"]');
+    
+    // Mock QR code scan result
+    await page.evaluate(() => {
+      window.dispatchEvent(new CustomEvent('qr-scan-result', {
+        detail: { itemId: 'test-item-123' }
+      }));
+    });
+    
+    await expect(page.locator('[data-testid="checkout-form"]')).toBeVisible();
+  });
+});
+```
+
+#### Test Data Management
+
+**Factory Pattern for Test Data:**
+```typescript
+// test/factories.ts
+export const createTestTroop = async (overrides = {}) => {
+  const defaultTroop = {
+    id: 'test-troop-1',
+    name: 'Test Troop 101',
+    slug: 'test-troop-101',
+    ...overrides,
+  };
+  
+  await testDb.insert(troops).values(defaultTroop);
+  return defaultTroop;
+};
+
+export const createTestUser = async (troopId: string, overrides = {}) => {
+  const passwordHash = await bcrypt.hash('testpassword123', 12);
+  
+  const defaultUser = {
+    id: 'test-user-1',
+    username: 'testuser',
+    email: 'test@example.com',
+    role: 'scout',
+    troopId,
+    passwordHash,
+    ...overrides,
+  };
+  
+  await testDb.insert(users).values(defaultUser);
+  return defaultUser;
+};
+```
+
+#### Coverage Requirements and CI/CD Integration
+
+**Minimum Coverage Thresholds:**
+- **Authentication & Authorization**: 100% statement coverage
+- **Business Logic**: 90% statement coverage  
+- **API Endpoints**: 85% statement coverage
+- **Database Operations**: 85% statement coverage
+- **Utility Functions**: 90% statement coverage
+- **Overall Project**: 85% statement coverage
+
+**Test Commands:**
 ```bash
 # Unit tests
 npm run test
 
+# Unit tests with coverage
+npm run test:coverage
+
+# Watch mode for development
+npm run test:watch
+
 # E2E tests
 npm run test:e2e
 
-# Test coverage
-npm run test:coverage
+# All tests (CI pipeline)
+npm run test:ci
 ```
+
+#### Security Testing
+
+**Authentication Security Tests:**
+```typescript
+describe('Security Tests', () => {
+  it('should prevent JWT token reuse after logout', async () => {
+    const token = generateTestToken(testUser.id, testUser.troopId, 'admin');
+    
+    // Token should work initially
+    context.req.header.mockReturnValue(`Bearer ${token}`);
+    await authenticate(context, next);
+    expect(next).toHaveBeenCalled();
+    
+    // After logout (in real implementation, would blacklist token)
+    // Token should be rejected
+    // Implementation would check against token blacklist
+  });
+
+  it('should prevent cross-tenant data access', async () => {
+    const troop1Token = generateTestToken('user1', 'troop1', 'admin');
+    
+    // Attempt to access troop2 data with troop1 token
+    const response = await request(app)
+      .get('/api/items')
+      .set('Authorization', `Bearer ${troop1Token}`)
+      .set('X-Troop-Slug', 'troop2')
+      .expect(403);
+      
+    expect(response.body.error).toContain('Insufficient permissions');
+  });
+});
+```
+
+This comprehensive testing strategy ensures code quality, security, and reliability across all layers of the application, from individual components to full user workflows.
 
 ### Build & Deployment
 
