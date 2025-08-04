@@ -5,7 +5,6 @@ import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { useAuthStore } from '../../store/auth'
-import { ApiError } from '../../lib/api'
 
 interface LoginFormData {
   email: string

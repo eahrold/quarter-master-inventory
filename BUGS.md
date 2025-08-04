@@ -31,7 +31,12 @@ This file tracks bugs found during development and their resolution status.
 
 - [x] Search Input Loses focus - Fixed in commit 540de60
 - [x] Search Filters clobbered by text change - Fixed in commit 540de60
+- [x] Add New Item Modal is double nested and incorrectly sized - Fixed in commit 2953b52
 
 ### Open Bugs
 
-- [ ] Add New Item Modal is double nested and incorrectly sized - Modal contains unnecessary card wrapper causing layout issues
+- [ ] Unable to open Edit modal for users in the UI.
+
+### Recently Fixed Bugs
+
+- [x] "View Details" button in item cards not working - Fixed by implementing navigation to item detail page

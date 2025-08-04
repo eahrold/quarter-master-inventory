@@ -215,9 +215,75 @@ class APIClient {
       })
     },
   }
+
+  // QR Code endpoints
+  qr = {
+    generate: async (itemId: string): Promise<{ itemId: string; itemName: string; qrCode: string; format: string }> => {
+      return await this.request<{ itemId: string; itemName: string; qrCode: string; format: string }>(`/api/qr/${itemId}`)
+    },
+
+    scan: async (qrData: string): Promise<{
+      success: boolean;
+      item: {
+        id: string;
+        name: string;
+        description?: string;
+        category: string;
+        location: string;
+        status: string;
+        qrCode: string;
+      };
+      scannedAt: string;
+    }> => {
+      return await this.request<{
+        success: boolean;
+        item: {
+          id: string;
+          name: string;
+          description?: string;
+          category: string;
+          location: string;
+          status: string;
+          qrCode: string;
+        };
+        scannedAt: string;
+      }>('/api/qr/scan', {
+        method: 'POST',
+        body: JSON.stringify({ qrData }),
+      })
+    },
+
+    getPrintable: async (itemId: string): Promise<string> => {
+      const response = await fetch(`${this.baseURL}/api/qr/${itemId}/print`, {
+        headers: {
+          ...(this.token && { Authorization: `Bearer ${this.token}` }),
+          ...(this.troopSlug && { 'x-troop-slug': this.troopSlug }),
+        },
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new ApiError(
+          errorData.error || `HTTP ${response.status}`,
+          response.status,
+          errorData.code
+        )
+      }
+
+      return await response.text()
+    },
+  }
 }
 
 // Create and export API client instance
 export const api = new APIClient(API_BASE_URL)
 export { ApiError }
-export type { User, Item }
+export type { 
+  User, 
+  Item, 
+  CreateItemData, 
+  UpdateItemData, 
+  CheckoutData, 
+  CheckinData, 
+  ItemFilters 
+}

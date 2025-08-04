@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, AlertCircle } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Modal, ModalContent, ModalHeader, ModalTitle } from '../components/ui/modal'
@@ -10,6 +11,7 @@ import { useAuthStore } from '../store/auth'
 import type { Item, CreateItemData, UpdateItemData, CheckoutData, CheckinData } from '../lib/api'
 
 export function InventoryPage() {
+  const navigate = useNavigate()
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingItem, setEditingItem] = useState<Item | null>(null)
@@ -168,8 +170,7 @@ export function InventoryPage() {
         items={items}
         loading={loading}
         onItemClick={(item) => {
-          // Could navigate to item detail page
-          console.log('View item:', item)
+          navigate(`/inventory/${item.id}`)
         }}
         onEditItem={canEditItems ? handleEditItem : undefined}
         onDeleteItem={canDeleteItems ? handleDeleteItem : undefined}

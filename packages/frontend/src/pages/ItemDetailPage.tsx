@@ -1,33 +1,61 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Package, QrCode, MapPin, Calendar } from 'lucide-react'
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { QRDisplay } from '@/components/scanner/QRDisplay';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Package, MapPin, Calendar, Loader2, AlertCircle } from 'lucide-react';
 
 export function ItemDetailPage() {
-  // Mock item data
-  const item = {
-    id: '1',
-    name: '4-Person Tent',
-    description: 'Coleman 4-person camping tent with rainfly',
-    category: 'permanent',
-    location: 'Left-High',
-    status: 'available',
-    qrCode: 'QM-1234567890',
-    createdAt: '2024-01-15',
-    lastUpdated: '2024-01-20',
-  }
+  const { id } = useParams<{ id: string }>();
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['item', id],
+    queryFn: () => api.items.get(id!),
+    enabled: !!id,
+  });
 
-  const getStatusBadge = (status: string) => {
+  const item = data?.item;
+
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'checked_out':
-        return 'bg-quartermaster-orange-100 text-quartermaster-orange-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'needs_repair':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-quartermaster-orange-500 mx-auto mb-2" />
+          <p className="text-gray-600">Loading item details...</p>
+        </div>
+      </div>
+    );
   }
+
+  if (error || !item) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+          <p className="text-gray-600">Failed to load item details</p>
+        </div>
+      </div>
+    );
+  }
+
+  const locationDisplay = `${item.locationSide.charAt(0).toUpperCase() + item.locationSide.slice(1)}-${
+    item.locationLevel.charAt(0).toUpperCase() + item.locationLevel.slice(1)
+  }`;
 
   return (
     <div className="space-y-6">
@@ -38,7 +66,9 @@ export function ItemDetailPage() {
         </div>
         <div className="flex space-x-3">
           <Button variant="outline">Edit Item</Button>
-          <Button variant="qm">Check Out</Button>
+          <Button variant="qm" disabled={item.status !== 'available'}>
+            {item.status === 'available' ? 'Check Out' : 'Unavailable'}
+          </Button>
         </div>
       </div>
 
@@ -64,9 +94,11 @@ export function ItemDetailPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700">Status</label>
-                  <span className={`mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(item.status)}`}>
-                    {item.status.replace('_', ' ')}
-                  </span>
+                  <div className="mt-1">
+                    <Badge className={getStatusColor(item.status)}>
+                      {item.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </Badge>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -98,32 +130,14 @@ export function ItemDetailPage() {
                 <div className="w-16 h-16 bg-quartermaster-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <MapPin className="h-8 w-8 text-quartermaster-orange-600" />
                 </div>
-                <p className="font-medium text-gray-900">{item.location}</p>
+                <p className="font-medium text-gray-900">{locationDisplay}</p>
                 <p className="text-sm text-gray-500">Trailer Location</p>
               </div>
             </CardContent>
           </Card>
 
           {/* QR Code */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <QrCode className="h-4 w-4" />
-                <span>QR Code</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center">
-                <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <QrCode className="h-16 w-16 text-gray-400" />
-                </div>
-                <p className="text-sm font-mono text-gray-600">{item.qrCode}</p>
-                <Button variant="outline" size="sm" className="mt-2">
-                  Print QR Code
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <QRDisplay itemId={item.id} itemName={item.name} showPrintButton={true} />
 
           {/* Metadata */}
           <Card>
@@ -136,11 +150,19 @@ export function ItemDetailPage() {
             <CardContent className="space-y-3">
               <div>
                 <label className="text-sm font-medium text-gray-700">Created</label>
-                <p className="text-sm text-gray-600">{item.createdAt}</p>
+                <p className="text-sm text-gray-600">
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Last Updated</label>
-                <p className="text-sm text-gray-600">{item.lastUpdated}</p>
+                <p className="text-sm text-gray-600">
+                  {new Date(item.updatedAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">QR Code ID</label>
+                <p className="text-sm font-mono text-gray-600">{item.qrCode}</p>
               </div>
             </CardContent>
           </Card>
