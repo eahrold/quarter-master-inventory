@@ -35,8 +35,10 @@ This file tracks bugs found during development and their resolution status.
 
 ### Open Bugs
 
-- [ ] Unable to open Edit modal for users in the UI.
+(No open bugs at this time)
 
 ### Recently Fixed Bugs
 
 - [x] "View Details" button in item cards not working - Fixed by implementing navigation to item detail page
+- [x] Unable to open Edit modal for users in the UI - Fixed by implementing edit modal with form handling and API integration
+- [x] Add User button not working - Fixed by implementing add user modal with complete form and API integration
