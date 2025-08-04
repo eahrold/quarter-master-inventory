@@ -56,10 +56,41 @@ _None currently_
 - [ ] **Backend: Search & Filter API** - Add search and filtering functionality for inventory items
 - [ ] **Frontend: Dashboard UI** - Build dashboard with inventory overview, search, and status summaries
 
-### Multi-Tenant Feature Pair
+### Super Admin & Troop Management Feature Pair
 
-- [ ] **Backend: Multi-Tenant API** - Add enhanced multi-tenant support with troop isolation
-- [ ] **Frontend: Troop Management UI** - Create troop selection, switching, and management interface
+- [ ] **Backend: Super Admin Role & Troop CRUD API** - Add super_admin role with full troop creation/management capabilities
+- [ ] **Frontend: Super Admin Dashboard & Troop Management UI** - Create super admin interface for creating and managing troops
+
+### Multi-Tenant Enhancement Feature Pair
+
+- [ ] **Backend: Enhanced Multi-Tenant API** - Improve multi-tenant support with better troop isolation and cross-troop permissions
+- [ ] **Frontend: Advanced Troop Management UI** - Create troop selection, switching, and enhanced management interface
+
+## Medium Priority (Infrastructure & Expansion)
+
+### Super Admin & Troop Management Implementation Details
+
+#### Backend Tasks:
+- [ ] **Add Super Admin Role** - Update user role enum to include `super_admin` with highest privileges
+- [ ] **Create Troop CRUD Repository** - Implement TroopRepository with create, read, update, delete operations
+- [ ] **Add Troop Management Routes** - Create `/api/troops` endpoints for super admin troop management
+- [ ] **Update Authorization Middleware** - Enhance middleware to handle super admin permissions and cross-troop access
+- [ ] **Add Troop Creation Validation** - Implement Zod schemas for troop creation and management
+- [ ] **Update Seed Data** - Add super admin user to database seeding
+
+#### Frontend Tasks:
+- [ ] **Create Super Admin Dashboard** - Build main interface for super admin with troop overview
+- [ ] **Build Troop Creation Form** - Create form with validation for new troop creation
+- [ ] **Add Troop Management Components** - Build TroopList, TroopCard, TroopDetail components
+- [ ] **Update Navigation** - Add super admin menu items and troop management navigation
+- [ ] **Enhance Registration Flow** - Update registration to handle troop selection/creation flow
+- [ ] **Add Super Admin Route Guards** - Implement route protection for super admin functionality
+
+#### Testing Requirements:
+- [ ] **Super Admin Authorization Tests** - Test super admin permissions and access controls
+- [ ] **Cross-Troop Security Tests** - Verify proper data isolation between troops
+- [ ] **Troop CRUD API Tests** - Test all troop management endpoints with proper authorization
+- [ ] **Super Admin UI Tests** - Test troop management interface and workflows
 
 ## Low Priority (Polish & Infrastructure)
 
@@ -151,3 +182,11 @@ This task list implements the Quarter Master Inventory App with:
 - **Backend**: Hono + TypeScript + Drizzle ORM + SQLite
 - **Features**: Multi-tenant, RBAC, QR scanning, mobile-responsive
 - **Theme**: Yellow/Orange color scheme for scout troops
+
+### Role-Based Access Control Hierarchy
+
+- **Super Admin**: System-wide access, can create/manage troops and assign admins
+- **Admin**: Full troop access, user management, all inventory operations within troop
+- **Leader**: Troop-level management, inventory operations, view reports within troop
+- **Scout**: Basic check-in/out operations, view inventory within troop
+- **Viewer**: Read-only access to inventory status within troop

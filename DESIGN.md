@@ -33,9 +33,9 @@ The Quarter Master Inventory App is designed as a multi-tenant SaaS application 
 
 ### Key Architectural Principles
 
-- **Multi-Tenant**: Complete data isolation between scout troops
+- **Multi-Tenant**: Complete data isolation between scout troops with super admin oversight
 - **Mobile-First**: Camera-based QR scanning with responsive design
-- **Role-Based Access Control**: Four distinct user roles with granular permissions
+- **Role-Based Access Control**: Five distinct user roles with hierarchical permissions (super_admin > admin > leader > scout > viewer)
 - **Real-Time Updates**: Optimistic UI updates with server synchronization
 - **Offline-Capable**: QR scanning works offline with sync when online
 
@@ -114,7 +114,7 @@ export const users = sqliteTable("users", {
   email: text("email").notNull(),
   passwordHash: text("password_hash").notNull(),
   role: text("role", {
-    enum: ["admin", "leader", "scout", "viewer"],
+    enum: ["super_admin", "admin", "leader", "scout", "viewer"],
   }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
     () => new Date()
@@ -250,6 +250,13 @@ src/
 │   │   ├── CheckoutFlow.tsx
 │   │   ├── CheckinFlow.tsx
 │   │   └── TransactionHistory.tsx
+│   ├── troops/
+│   │   ├── TroopList.tsx
+│   │   ├── TroopCard.tsx
+│   │   ├── TroopDetail.tsx
+│   │   ├── TroopForm.tsx
+│   │   ├── TroopSelector.tsx
+│   │   └── SuperAdminDashboard.tsx
 │   ├── dashboard/
 │   │   ├── Dashboard.tsx
 │   │   ├── StatusCards.tsx
@@ -263,7 +270,8 @@ src/
 │   ├── useItems.ts
 │   ├── useTransactions.ts
 │   ├── useQRScanner.ts
-│   └── useTroop.ts
+│   ├── useTroop.ts
+│   └── useTroops.ts
 ├── store/
 │   ├── auth.ts              # Zustand auth store
 │   ├── ui.ts                # UI state (modals, sidebar)
@@ -276,7 +284,161 @@ src/
 └── types/
     ├── auth.ts
     ├── inventory.ts
+    ├── troop.ts
     └── api.ts
+```
+
+### Troop Management Frontend Components
+
+#### Super Admin Dashboard Component
+
+```typescript
+// components/troops/SuperAdminDashboard.tsx
+import { useState } from "react";
+import { useTroops, useCreateTroop } from "@/hooks/useTroops";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, Users, Building } from "lucide-react";
+import { TroopList } from "./TroopList";
+import { TroopForm } from "./TroopForm";
+
+export function SuperAdminDashboard() {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const { data: troops, isLoading } = useTroops();
+  const createTroopMutation = useCreateTroop();
+
+  const handleCreateTroop = async (data: CreateTroopData) => {
+    try {
+      await createTroopMutation.mutateAsync(data);
+      setShowCreateForm(false);
+    } catch (error) {
+      console.error("Failed to create troop:", error);
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
+        <Button
+          onClick={() => setShowCreateForm(true)}
+          className="bg-orange-500 hover:bg-orange-600"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create Troop
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Troops</CardTitle>
+            <Building className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{troops?.length || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Troops</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {troops?.filter(troop => troop.isActive).length || 0}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {troops?.reduce((sum, troop) => sum + (troop.userCount || 0), 0) || 0}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {showCreateForm && (
+        <TroopForm
+          onSubmit={handleCreateTroop}
+          onCancel={() => setShowCreateForm(false)}
+          isLoading={createTroopMutation.isPending}
+        />
+      )}
+
+      <TroopList troops={troops || []} />
+    </div>
+  );
+}
+```
+
+#### Troop Management Hooks
+
+```typescript
+// hooks/useTroops.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import type { Troop, CreateTroopData, UpdateTroopData } from "@/types/troop";
+
+export function useTroops() {
+  return useQuery({
+    queryKey: ["troops"],
+    queryFn: () => api.troops.list(),
+    staleTime: 60_000, // 1 minute
+  });
+}
+
+export function useTroop(troopId: string) {
+  return useQuery({
+    queryKey: ["troops", troopId],
+    queryFn: () => api.troops.getById(troopId),
+    enabled: !!troopId,
+  });
+}
+
+export function useCreateTroop() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateTroopData) => api.troops.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["troops"] });
+    },
+  });
+}
+
+export function useUpdateTroop() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateTroopData }) =>
+      api.troops.update(id, data),
+    onSuccess: (updatedTroop) => {
+      queryClient.invalidateQueries({ queryKey: ["troops"] });
+      queryClient.setQueryData(["troops", updatedTroop.id], updatedTroop);
+    },
+  });
+}
+
+export function useDeleteTroop() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (troopId: string) => api.troops.delete(troopId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["troops"] });
+    },
+  });
+}
 ```
 
 ### Key Frontend Patterns
@@ -740,6 +902,205 @@ app.post(
 export default app;
 ```
 
+### Troop Management API Routes
+
+```typescript
+// routes/troops.ts
+import { Hono } from "hono";
+import { TroopRepository } from "@/repositories/TroopRepository";
+import { authenticate, authorize } from "@/middleware/auth";
+import { validator } from "hono/validator";
+import { createTroopSchema, updateTroopSchema } from "@/lib/validation";
+
+type Variables = {
+  user: {
+    id: string;
+    role: string;
+    troopId: string;
+    username: string;
+    email: string;
+  };
+};
+
+const app = new Hono<{ Variables: Variables }>();
+const troopRepo = new TroopRepository();
+
+// All routes require super admin authentication
+app.use("*", authenticate);
+app.use("*", authorize(["super_admin"]));
+
+// GET /api/troops - List all troops (super admin only)
+app.get("/", async (c) => {
+  try {
+    const troops = await troopRepo.findAll();
+    return c.json(troops);
+  } catch (error) {
+    return c.json({ error: "Failed to fetch troops" }, 500);
+  }
+});
+
+// GET /api/troops/:id - Get troop details (super admin only)
+app.get("/:id", async (c) => {
+  try {
+    const troopId = c.req.param("id");
+    const troop = await troopRepo.findById(troopId);
+    
+    if (!troop) {
+      return c.json({ error: "Troop not found" }, 404);
+    }
+    
+    return c.json(troop);
+  } catch (error) {
+    return c.json({ error: "Failed to fetch troop" }, 500);
+  }
+});
+
+// POST /api/troops - Create new troop (super admin only)
+app.post(
+  "/",
+  validator("json", (value, c) => {
+    const parsed = createTroopSchema.safeParse(value);
+    if (!parsed.success) {
+      return c.json(
+        { error: "Invalid input", details: parsed.error.issues },
+        400
+      );
+    }
+    return parsed.data;
+  }),
+  async (c) => {
+    try {
+      const data = c.req.valid("json");
+      const troop = await troopRepo.create(data);
+      return c.json(troop, 201);
+    } catch (error) {
+      if (error.message.includes("UNIQUE constraint failed")) {
+        return c.json({ error: "Troop slug already exists" }, 409);
+      }
+      return c.json({ error: "Failed to create troop" }, 500);
+    }
+  }
+);
+
+// PUT /api/troops/:id - Update troop (super admin only)  
+app.put(
+  "/:id",
+  validator("json", (value, c) => {
+    const parsed = updateTroopSchema.safeParse(value);
+    if (!parsed.success) {
+      return c.json(
+        { error: "Invalid input", details: parsed.error.issues },
+        400
+      );
+    }
+    return parsed.data;
+  }),
+  async (c) => {
+    try {
+      const troopId = c.req.param("id");
+      const data = c.req.valid("json");
+      const troop = await troopRepo.update(troopId, data);
+      
+      if (!troop) {
+        return c.json({ error: "Troop not found" }, 404);
+      }
+      
+      return c.json(troop);
+    } catch (error) {
+      return c.json({ error: "Failed to update troop" }, 500);
+    }
+  }
+);
+
+// DELETE /api/troops/:id - Delete troop (super admin only)
+app.delete("/:id", async (c) => {
+  try {
+    const troopId = c.req.param("id");
+    const deleted = await troopRepo.delete(troopId);
+    
+    if (!deleted) {
+      return c.json({ error: "Troop not found" }, 404);
+    }
+    
+    return c.json({ message: "Troop deleted successfully" });
+  } catch (error) {
+    return c.json({ error: "Failed to delete troop" }, 500);
+  }
+});
+
+export default app;
+```
+
+### Troop Repository Implementation
+
+```typescript
+// repositories/TroopRepository.ts
+import { db } from "@/db";
+import { troops } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import type { CreateTroopData, UpdateTroopData } from "@/types/troop";
+
+export class TroopRepository {
+  async findAll() {
+    return db.select().from(troops).orderBy(troops.name);
+  }
+
+  async findById(id: string) {
+    const [troop] = await db
+      .select()
+      .from(troops)
+      .where(eq(troops.id, id))
+      .limit(1);
+    
+    return troop || null;
+  }
+
+  async findBySlug(slug: string) {
+    const [troop] = await db
+      .select()
+      .from(troops)
+      .where(eq(troops.slug, slug))
+      .limit(1);
+    
+    return troop || null;
+  }
+
+  async create(data: CreateTroopData) {
+    const [troop] = await db
+      .insert(troops)
+      .values({
+        name: data.name,
+        slug: data.slug,
+      })
+      .returning();
+
+    return troop;
+  }
+
+  async update(id: string, data: UpdateTroopData) {
+    const [troop] = await db
+      .update(troops)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(troops.id, id))
+      .returning();
+
+    return troop;
+  }
+
+  async delete(id: string) {
+    const result = await db
+      .delete(troops)
+      .where(eq(troops.id, id))
+      .returning();
+
+    return result.length > 0;
+  }
+}
+```
+
 ## QR Code Integration
 
 ### QR Code Generation Service
@@ -975,6 +1336,13 @@ export async function authenticate(
 export function authorize(roles: string[]) {
   return async (c: Context<{ Variables: Variables }>, next: Next) => {
     const user = c.get("user");
+    
+    // Super admin can access everything
+    if (user?.role === "super_admin") {
+      await next();
+      return;
+    }
+    
     if (!user || !roles.includes(user.role)) {
       return c.json({ error: "Insufficient permissions" }, 403);
     }
@@ -1014,6 +1382,23 @@ export const registerSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   troopSlug: z.string().min(1, "Troop identifier is required"),
+});
+
+export const createTroopSchema = z.object({
+  name: z.string().min(1, "Troop name is required").max(100),
+  slug: z.string()
+    .min(1, "Troop slug is required")
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+});
+
+export const updateTroopSchema = z.object({
+  name: z.string().min(1, "Troop name is required").max(100).optional(),
+  slug: z.string()
+    .min(1, "Troop slug is required")
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens")
+    .optional(),
 });
 ```
 
@@ -1569,6 +1954,7 @@ import authRoutes from "./routes/auth";
 import itemRoutes from "./routes/items";
 import userRoutes from "./routes/users";
 import qrRoutes from "./routes/qr";
+import troopRoutes from "./routes/troops";
 
 type Variables = {
   troop: { id: string; name: string; slug: string };
@@ -1604,6 +1990,7 @@ app.route("/api/auth", authRoutes);
 app.route("/api/items", itemRoutes);
 app.route("/api/users", userRoutes);
 app.route("/api/qr", qrRoutes);
+app.route("/api/troops", troopRoutes);
 
 // 404 handler
 app.notFound((c) => c.json({ error: "Not Found" }, 404));
