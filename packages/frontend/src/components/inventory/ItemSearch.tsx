@@ -96,10 +96,13 @@ export const ItemSearch = memo(
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
                   <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
                   <DropdownMenuItem
-                    onClick={() => setFilter("category", "permanent")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("category", "permanent");
+                    }}
                     className={
                       filters.category === "permanent" ? "bg-accent" : ""
                     }
@@ -107,7 +110,10 @@ export const ItemSearch = memo(
                     Permanent Items
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("category", "staples")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("category", "staples");
+                    }}
                     className={
                       filters.category === "staples" ? "bg-accent" : ""
                     }
@@ -118,7 +124,10 @@ export const ItemSearch = memo(
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                   <DropdownMenuItem
-                    onClick={() => setFilter("status", "available")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("status", "available");
+                    }}
                     className={
                       filters.status === "available" ? "bg-accent" : ""
                     }
@@ -126,7 +135,10 @@ export const ItemSearch = memo(
                     Available
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("status", "checked_out")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("status", "checked_out");
+                    }}
                     className={
                       filters.status === "checked_out" ? "bg-accent" : ""
                     }
@@ -134,7 +146,10 @@ export const ItemSearch = memo(
                     Checked Out
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("status", "needs_repair")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("status", "needs_repair");
+                    }}
                     className={
                       filters.status === "needs_repair" ? "bg-accent" : ""
                     }
@@ -145,32 +160,68 @@ export const ItemSearch = memo(
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Filter by Location</DropdownMenuLabel>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "left-low")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "left-low");
+                    }}
+                    className={
+                      filters.location === "left-low" ? "bg-accent" : ""
+                    }
                   >
                     Left-Low
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "left-middle")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "left-middle");
+                    }}
+                    className={
+                      filters.location === "left-middle" ? "bg-accent" : ""
+                    }
                   >
                     Left-Middle
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "left-high")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "left-high");
+                    }}
+                    className={
+                      filters.location === "left-high" ? "bg-accent" : ""
+                    }
                   >
                     Left-High
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "right-low")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "right-low");
+                    }}
+                    className={
+                      filters.location === "right-low" ? "bg-accent" : ""
+                    }
                   >
                     Right-Low
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "right-middle")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "right-middle");
+                    }}
+                    className={
+                      filters.location === "right-middle" ? "bg-accent" : ""
+                    }
                   >
                     Right-Middle
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setFilter("location", "right-high")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFilter("location", "right-high");
+                    }}
+                    className={
+                      filters.location === "right-high" ? "bg-accent" : ""
+                    }
                   >
                     Right-High
                   </DropdownMenuItem>
