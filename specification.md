@@ -312,6 +312,80 @@ A web-based inventory management system for scout troops to track equipment stor
 - Advanced search with saved filters
 - Item reservation system
 
+## Bug Tracking and Quality Assurance
+
+### Bug Tracking System
+
+The project maintains a centralized bug tracking system in `BUGS.md` to ensure all discovered issues are properly documented, tracked, and resolved.
+
+#### Bug Documentation Process
+
+**1. Bug Discovery and Reporting**
+- **Immediate Documentation**: When bugs are discovered, they must be immediately added to `BUGS.md`
+- **Clear Description**: Include specific, actionable descriptions of the bug
+- **Reproduction Steps**: Document how to reproduce the issue
+- **Impact Assessment**: Note severity and affected user workflows
+- **Context Information**: Include browser, device, or environment details when relevant
+
+**2. Bug Status Management**
+- **Open Bugs**: Use `- [ ]` checkbox format for unresolved issues
+- **Fixed Bugs**: Change to `- [x]` checkbox when resolved
+- **Commit Reference**: Always include the commit SHA that fixes the bug
+- **Verification**: Ensure fix is tested and confirmed working
+
+#### Bug Categories and Examples
+
+**Frontend Bugs**
+```markdown
+- [ ] Search input loses focus on mobile Safari - Affects search functionality
+- [ ] Modal dialog not closing on backdrop click - Z-index issue with overlays
+- [ ] Form validation errors not clearing - State management bug in form component
+```
+
+**Backend Bugs**
+```markdown
+- [ ] API returns 500 on empty search query - Missing null check in search endpoint
+- [ ] Database connection timeout on large queries - Performance optimization needed
+- [ ] JWT token refresh fails after 24 hours - Token validation logic error
+```
+
+**Integration Bugs**
+```markdown
+- [ ] QR scanner fails in low-light conditions - Camera API timeout issues
+- [ ] Real-time updates not syncing across tabs - WebSocket connection handling
+- [ ] File upload progress not updating - Frontend-backend progress communication
+```
+
+#### Bug Tracking Integration with Development
+
+**Feature Development Requirements**
+- All new features must include bug prevention measures
+- Code reviews must check for potential bug introduction
+- Testing must cover both happy path and error scenarios
+- Documentation must include known limitations and workarounds
+
+**Bug Fix Process**
+1. **Reproduce**: Confirm the bug can be reliably reproduced
+2. **Isolate**: Identify the root cause and affected components
+3. **Fix**: Implement the minimum necessary fix
+4. **Test**: Verify fix works and doesn't introduce regressions
+5. **Document**: Update `BUGS.md` with fix reference and commit SHA
+6. **Monitor**: Watch for related issues after deployment
+
+#### Quality Assurance Standards
+
+**Pre-Release Bug Review**
+- All open bugs must be triaged before releases
+- Critical bugs must be fixed before deployment
+- Known bugs must be documented in release notes
+- User-facing bugs require stakeholder approval to ship
+
+**Bug Prevention Strategies**
+- **Static Analysis**: Use TypeScript, ESLint, and automated tools
+- **Testing Coverage**: Maintain minimum coverage thresholds
+- **Peer Review**: Mandatory code review for all changes
+- **User Testing**: Regular testing with actual user workflows
+
 ## Security Considerations
 - Input validation on all endpoints
 - SQL injection prevention

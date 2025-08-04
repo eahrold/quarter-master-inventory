@@ -183,11 +183,13 @@ export function InventoryPage() {
           <ModalHeader>
             <ModalTitle>Add New Item</ModalTitle>
           </ModalHeader>
-          <ItemForm
-            onSubmit={handleCreateItem}
-            onCancel={() => setShowAddModal(false)}
-            loading={loading}
-          />
+          <div className="px-6 pb-6">
+            <ItemForm
+              onSubmit={handleCreateItem}
+              onCancel={() => setShowAddModal(false)}
+              loading={loading}
+            />
+          </div>
         </ModalContent>
       </Modal>
 
@@ -197,15 +199,17 @@ export function InventoryPage() {
           <ModalHeader>
             <ModalTitle>Edit Item</ModalTitle>
           </ModalHeader>
-          <ItemForm
-            item={editingItem || undefined}
-            onSubmit={handleUpdateItem}
-            onCancel={() => {
-              setShowEditModal(false)
-              setEditingItem(null)
-            }}
-            loading={loading}
-          />
+          <div className="px-6 pb-6">
+            <ItemForm
+              item={editingItem || undefined}
+              onSubmit={handleUpdateItem}
+              onCancel={() => {
+                setShowEditModal(false)
+                setEditingItem(null)
+              }}
+              loading={loading}
+            />
+          </div>
         </ModalContent>
       </Modal>
 

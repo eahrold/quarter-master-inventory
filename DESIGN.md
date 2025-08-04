@@ -12,6 +12,7 @@
 - [Security & Authentication](#security--authentication)
 - [Project Structure](#project-structure)
 - [Development Workflow](#development-workflow)
+- [Bug Tracking](#bug-tracking)
 
 ## Architecture Overview
 
@@ -1615,3 +1616,88 @@ app.onError((err, c) => {
 
 export default app;
 ```
+
+## Bug Tracking
+
+The project uses a centralized bug tracking system documented in `BUGS.md` to maintain visibility into discovered issues and their resolution status.
+
+### Bug Tracking Process
+
+#### 1. Discovering Bugs
+When bugs are discovered during development, testing, or production use:
+
+- **Document Immediately**: Add the bug to `BUGS.md` with `- [ ]` checkbox format
+- **Include Context**: Provide clear description and reproduction steps
+- **Assign Priority**: Use appropriate priority levels (critical, high, medium, low)
+- **Reference Issues**: Link to related GitHub issues or user reports if applicable
+
+#### 2. Bug Resolution Workflow
+When fixing bugs:
+
+- **Update Status**: Change `- [ ]` to `- [x]` when bug is resolved
+- **Reference Commit**: Include the commit SHA that contains the fix
+- **Verify Fix**: Ensure the bug is actually resolved, not just addressed
+- **Update Documentation**: If the bug revealed documentation gaps, update relevant docs
+
+#### 3. Bug Documentation Format
+```markdown
+### Open Bugs
+- [ ] Search pagination breaks on mobile devices - Occurs on screens < 768px width
+- [ ] QR scanner fails in low light conditions - Camera API timeout after 10 seconds
+
+### Fixed Bugs  
+- [x] Search Input Loses focus - Fixed in commit 540de60
+- [x] Login form accepts empty passwords - Fixed in commit abc1234
+```
+
+#### 4. Integration with Development Workflow
+- **Code Reviews**: Reference relevant bugs in PR descriptions
+- **Testing**: Verify bug fixes don't introduce regressions
+- **Release Notes**: Include resolved bugs in deployment documentation
+- **Monitoring**: Track if fixed bugs reoccur in production
+
+### Bug Categories
+
+#### Frontend Bugs
+- UI/UX issues (layout, styling, accessibility)
+- Component state management problems
+- Browser compatibility issues
+- Mobile responsiveness problems
+
+#### Backend Bugs
+- API endpoint errors
+- Database query issues
+- Authentication/authorization failures
+- Performance bottlenecks
+
+#### Integration Bugs
+- Frontend-backend communication issues
+- Third-party service integration problems
+- QR code scanning reliability
+- Real-time update synchronization
+
+#### Security Bugs
+- Authentication bypass vulnerabilities
+- Authorization escalation issues
+- Data validation failures
+- Cross-tenant data leakage
+
+### Bug Prevention Strategies
+
+#### Development Practices
+- **Code Reviews**: Mandatory peer review for all changes
+- **Testing**: Comprehensive unit, integration, and E2E test coverage
+- **Type Safety**: Leverage TypeScript to catch type-related bugs early
+- **Linting**: Use ESLint and Prettier to maintain code quality
+
+#### Quality Assurance
+- **Manual Testing**: Regular manual testing of critical user workflows
+- **Automated Testing**: CI/CD pipeline with comprehensive test suites
+- **Browser Testing**: Cross-browser compatibility verification
+- **Mobile Testing**: Regular testing on various mobile devices
+
+#### Monitoring & Detection
+- **Error Tracking**: Implement error reporting in production
+- **Performance Monitoring**: Track application performance metrics
+- **User Feedback**: Channels for users to report issues
+- **Analytics**: Monitor user behavior for potential issues

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
 import type { Item, CreateItemData, UpdateItemData } from '../../lib/api'
 
@@ -86,14 +85,7 @@ export function ItemForm({ item, onSubmit, onCancel, loading = false }: ItemForm
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle>
-          {item ? 'Edit Item' : 'Add New Item'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
             <div>
@@ -304,8 +296,6 @@ export function ItemForm({ item, onSubmit, onCancel, loading = false }: ItemForm
               Cancel
             </Button>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+    </form>
   )
 }
