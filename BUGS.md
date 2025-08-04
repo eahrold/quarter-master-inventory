@@ -27,18 +27,15 @@ This file tracks bugs found during development and their resolution status.
 
 ## Current Bug Status
 
-### Fixed Bugs
-
-- [x] Search Input Loses focus - Fixed in commit 540de60
-- [x] Search Filters clobbered by text change - Fixed in commit 540de60
-- [x] Add New Item Modal is double nested and incorrectly sized - Fixed in commit 2953b52
-
 ### Open Bugs
 
 (No open bugs at this time)
 
 ### Recently Fixed Bugs
 
+- [x] Search Input Loses focus - Fixed in commit 540de60
+- [x] Search Filters clobbered by text change - Fixed in commit 540de60
+- [x] Add New Item Modal is double nested and incorrectly sized - Fixed in commit 2953b52
 - [x] "View Details" button in item cards not working - Fixed by implementing navigation to item detail page
-- [x] Unable to open Edit modal for users in the UI - Fixed by implementing edit modal with form handling and API integration
-- [x] Add User button not working - Fixed by implementing add user modal with complete form and API integration
+- [x] Unable to open Edit modal for users in the UI - Fixed in commit 274e99a
+- [x] Add User button not working - Fixed in commit 274e99a
